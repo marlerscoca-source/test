@@ -1,0 +1,164 @@
+# Culinary autosuggestion words
+# These appear as autocomplete suggestions in the editor.
+# Format: word or phrase, optionally with a category and snippet.
+
+words:
+  # Techniques
+  - word: "mise en place"
+    category: technique
+  - word: "brunoise"
+    category: knife-cut
+  - word: "julienne"
+    category: knife-cut
+  - word: "chiffonade"
+    category: knife-cut
+  - word: "macédoine"
+    category: knife-cut
+  - word: "tourné"
+    category: knife-cut
+  - word: "blanching"
+    category: technique
+  - word: "braising"
+    category: technique
+  - word: "sautéing"
+    category: technique
+  - word: "flambé"
+    category: technique
+  - word: "deglaze"
+    category: technique
+  - word: "emulsification"
+    category: technique
+  - word: "caramelization"
+    category: technique
+  - word: "maillard reaction"
+    category: science
+  - word: "tempering"
+    category: technique
+  - word: "confit"
+    category: technique
+  - word: "sous vide"
+    category: technique
+  - word: "poaching"
+    category: technique
+  - word: "reduction"
+    category: technique
+  - word: "clarification"
+    category: technique
+  - word: "nappe"
+    category: technique
+  - word: "sablage"
+    category: technique
+  - word: "laminage"
+    category: technique
+  - word: "autolyse"
+    category: technique
+
+  # Sauces
+  - word: "beurre blanc"
+    category: sauce
+  - word: "béarnaise"
+    category: sauce
+  - word: "hollandaise"
+    category: sauce
+  - word: "velouté"
+    category: sauce
+  - word: "espagnole"
+    category: sauce
+  - word: "béchamel"
+    category: sauce
+  - word: "demi-glace"
+    category: sauce
+  - word: "sauce tomate"
+    category: sauce
+  - word: "liaison"
+    category: sauce
+
+  # Pâtisserie
+  - word: "pâte brisée"
+    category: pastry
+  - word: "pâte feuilletée"
+    category: pastry
+  - word: "pâte sablée"
+    category: pastry
+  - word: "crème pâtissière"
+    category: pastry
+  - word: "crème anglaise"
+    category: pastry
+  - word: "crème brûlée"
+    category: pastry
+  - word: "ganache"
+    category: chocolate
+  - word: "praline"
+    category: confection
+  - word: "marzipan"
+    category: confection
+  - word: "génoise"
+    category: sponge
+  - word: "dacquoise"
+    category: meringue
+  - word: "choux pastry"
+    category: pastry
+  - word: "fondant"
+    category: confection
+  - word: "détrempe"
+    category: pastry
+  - word: "beurrage"
+    category: pastry
+
+  # Bread
+  - word: "poolish"
+    category: bread
+  - word: "levain"
+    category: bread
+  - word: "brioche"
+    category: bread
+  - word: "baguette"
+    category: bread
+  - word: "croissant"
+    category: viennoiserie
+  - word: "kouign-amann"
+    category: viennoiserie
+  - word: "sourdough"
+    category: bread
+
+  # Wine
+  - word: "terroir"
+    category: wine
+  - word: "appellation"
+    category: wine
+  - word: "millésime"
+    category: wine
+  - word: "assemblage"
+    category: wine
+  - word: "tannins"
+    category: wine
+  - word: "vinification"
+    category: wine
+  - word: "dégorgement"
+    category: wine
+  - word: "cépages"
+    category: wine
+  - word: "mariage mets et vins"
+    category: wine
+
+  # Equipment
+  - word: "bain-marie"
+    category: equipment
+  - word: "mandoline"
+    category: equipment
+  - word: "chinois"
+    category: equipment
+  - word: "salamander"
+    category: equipment
+  - word: "batterie de cuisine"
+    category: equipment
+
+  # Plating
+  - word: "dressage"
+    category: plating
+  - word: "quenelle"
+    category: plating
+  - word: "tuile"
+    category: garnish
+  - word: "umami"
+    category: flavour

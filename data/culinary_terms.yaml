@@ -1,0 +1,332 @@
+# Culinary Terms Glossary
+# These terms show a popup definition when hovered in the preview pane.
+# Also used for the side glossary panel.
+
+terms:
+  - word: "mise en place"
+    category: "Concept"
+    definition: >
+      French for "everything in its place." The practice of preparing and organising
+      all ingredients and equipment before cooking begins. A cornerstone of professional kitchens
+      and the foundation of efficiency in service.
+
+  - word: "brunoise"
+    category: "Knife Cut"
+    definition: >
+      A very fine dice of 1–3 mm. Produced by first cutting into julienne strips,
+      then cross-cutting. Used for refined garnishes, delicate sauces, and fine soups.
+
+  - word: "julienne"
+    category: "Knife Cut"
+    definition: >
+      Thin matchstick strips, typically 3 mm × 5 cm. The foundation for many subsequent
+      cuts including brunoise. Used in salads, stir-fries, and as garnishes.
+
+  - word: "chiffonade"
+    category: "Knife Cut"
+    definition: >
+      Fine ribbon-cut herbs or leafy vegetables, achieved by rolling them tightly and
+      slicing very thin. Used as a fresh garnish for soups, pastas, and salads.
+
+  - word: "blanching"
+    category: "Technique"
+    definition: >
+      Brief immersion in boiling water (30 seconds to 3 minutes) followed immediately
+      by an ice bath. Preserves colour, texture and nutrients; also loosens skins
+      of tomatoes and stone fruits.
+
+  - word: "braising"
+    category: "Technique"
+    definition: >
+      A combination cooking method: first sear the protein at high heat to develop
+      colour and flavour, then cook slowly in a small amount of liquid in a covered
+      pot. Ideal for tough cuts of meat.
+
+  - word: "sautéing"
+    category: "Technique"
+    definition: >
+      Cooking quickly in a small amount of fat over high heat while stirring or tossing
+      the pan. From the French "sauter" meaning to jump. Develops colour and concentrates flavour.
+
+  - word: "flambé"
+    category: "Technique"
+    definition: >
+      Adding alcohol to a hot pan and igniting it to burn off the ethanol while retaining
+      the aromatic compounds. Creates dramatic presentation and adds complexity to the flavour.
+
+  - word: "deglaze"
+    category: "Technique"
+    definition: >
+      Adding liquid (wine, stock, water) to a hot pan after searing to dissolve the
+      caramelised fond (browned bits) on the bottom, creating a flavourful sauce base.
+
+  - word: "emulsification"
+    category: "Technique"
+    definition: >
+      The process of combining two immiscible liquids (typically oil and water) into a
+      stable, uniform suspension using an emulsifier such as egg yolk lecithin or mustard.
+
+  - word: "caramelization"
+    category: "Science"
+    definition: >
+      The browning of sugars at high temperature (160–180°C for sucrose). Produces hundreds
+      of flavour compounds ranging from buttery and sweet to nutty and bitter.
+
+  - word: "maillard reaction"
+    category: "Science"
+    definition: >
+      A chemical reaction between amino acids and reducing sugars at approximately 140–165°C
+      that creates the brown colour and complex flavours of seared meat, baked bread, and
+      roasted coffee. Named after chemist Louis-Camille Maillard.
+
+  - word: "tempering"
+    category: "Technique"
+    definition: >
+      (1) Chocolate: controlled heating and cooling to form stable cocoa butter crystals
+      (Form V), giving gloss and snap. (2) Eggs/dairy: gradually raising temperature by
+      adding hot liquid slowly to prevent curdling.
+
+  - word: "confit"
+    category: "Technique"
+    definition: >
+      A preservation method of cooking food (typically duck legs, garlic, or vegetables)
+      completely submerged in fat at a low temperature (70–90°C) for an extended period.
+      Results in extremely tender, richly flavoured meat.
+
+  - word: "sous vide"
+    category: "Technique"
+    definition: >
+      French for "under vacuum." Food is vacuum-sealed in a bag and cooked in a water bath
+      at a precisely controlled temperature, often for several hours or days. Produces
+      perfectly uniform results.
+
+  - word: "poaching"
+    category: "Technique"
+    definition: >
+      Gently cooking food submerged in liquid at 70–85°C (below simmering). Used for eggs,
+      fish, chicken breast, and delicate fruits. Preserves moisture and texture.
+
+  - word: "reduction"
+    category: "Technique"
+    definition: >
+      Simmering a liquid to evaporate water content, concentrating flavours and thickening
+      consistency. Common for making sauces, glazes, and demi-glace.
+
+  - word: "clarification"
+    category: "Technique"
+    definition: >
+      Removing impurities from stocks to produce a crystal-clear consommé. Uses a clearmeat
+      (lean ground meat + egg whites) which coagulates and traps particles as it heats.
+
+  - word: "nappe"
+    category: "Technique"
+    definition: >
+      The consistency of a sauce or cream that coats the back of a spoon cleanly. From the
+      French for "tablecloth." Used to test readiness of crème anglaise — draw a line through
+      the coating; if it holds, the sauce is ready.
+
+  - word: "beurre blanc"
+    category: "Sauce"
+    definition: >
+      A classic French emulsified butter sauce made by reducing white wine and shallot vinegar,
+      then mounting cold butter cubes off the heat to create a silky emulsion. Served with fish.
+
+  - word: "béarnaise"
+    category: "Sauce"
+    definition: >
+      A rich emulsified sauce of clarified butter and egg yolks, flavoured with tarragon,
+      chervil, and a white wine/vinegar reduction. A derivative of hollandaise. Classically
+      paired with grilled beef.
+
+  - word: "hollandaise"
+    category: "Mother Sauce"
+    definition: >
+      One of the five French mother sauces. A warm emulsified sauce of egg yolks, clarified
+      butter, and lemon juice. Notoriously temperature-sensitive — overheating causes scrambling,
+      underheating causes breakdown.
+
+  - word: "velouté"
+    category: "Mother Sauce"
+    definition: >
+      A mother sauce made by binding a white or blond roux with white stock (veal, chicken,
+      or fish). Smooth and velvety (hence the name). Base for suprême, allemande, and many
+      derivative sauces.
+
+  - word: "espagnole"
+    category: "Mother Sauce"
+    definition: >
+      The brown mother sauce, made with a dark roux, well-coloured veal stock, and tomato
+      purée. Rich and intensely savoury. Foundation of demi-glace, sauce Robert, and
+      many classical preparations.
+
+  - word: "béchamel"
+    category: "Mother Sauce"
+    definition: >
+      A mother sauce made from a white roux and hot milk, seasoned with salt, pepper, and
+      nutmeg. Base for mornay (with cheese), soubise (with onion), and numerous gratin preparations.
+
+  - word: "demi-glace"
+    category: "Sauce"
+    definition: >
+      A rich, glossy, deeply flavoured sauce produced by reducing espagnole with additional
+      brown veal stock by at least half. Its gelatinous texture coats the palate. The
+      foundation of classical French sauce cookery.
+
+  - word: "pâte brisée"
+    category: "Pastry Dough"
+    definition: >
+      A short-crust pastry made by rubbing cold butter into flour (sablage) until sandy,
+      then binding with minimal cold water. Used for savoury tarts and quiches. Handle
+      as little as possible to prevent gluten development.
+
+  - word: "pâte feuilletée"
+    category: "Pastry Dough"
+    definition: >
+      Classic puff pastry made by laminating a détrempe (base dough) with a beurrage (butter
+      block) through a series of folds called turns, creating hundreds of flaky, buttery layers.
+
+  - word: "pâte sablée"
+    category: "Pastry Dough"
+    definition: >
+      A rich, sweet short dough made by creaming butter and sugar before adding flour and egg.
+      Produces a sandy, crumbly texture (sablé = sandy in French). Used for petits fours and
+      dessert tart shells.
+
+  - word: "crème pâtissière"
+    category: "Cream"
+    definition: >
+      Pastry cream — a thick, silky custard made from milk, egg yolks, sugar, and starch
+      (cornflour or flour). The workhorse filling of French pâtisserie, used in éclairs,
+      mille-feuille, and fruit tarts.
+
+  - word: "crème anglaise"
+    category: "Cream"
+    definition: >
+      A pourable custard sauce cooked to nappe consistency. Made from milk/cream, egg yolks,
+      and sugar. Base for crème brûlée, ice cream, bavarois, and many cold desserts.
+
+  - word: "ganache"
+    category: "Chocolate"
+    definition: >
+      An emulsion of hot cream poured over chopped chocolate. The chocolate-to-cream ratio
+      determines use: 2:1 for firm truffles and enrobing; 1:1 for glazes and tart fillings;
+      1:2 for pourable sauces.
+
+  - word: "praline"
+    category: "Confection"
+    definition: >
+      A confection of caramelised sugar and toasted nuts (typically almonds or hazelnuts).
+      When ground into a paste it becomes praliné — used in buttercreams, chocolate bonbons,
+      and pastry fillings.
+
+  - word: "génoise"
+    category: "Sponge"
+    definition: >
+      A classic whole-egg sponge cake leavened entirely by air beaten into the egg and sugar
+      mixture (ribbon stage). Denser than chiffon but deeply flavourful. Base for many layered
+      entremets and petits gâteaux.
+
+  - word: "dacquoise"
+    category: "Meringue"
+    definition: >
+      A baked meringue disc made with finely ground nuts (almonds, hazelnuts, or coconut).
+      Crisp on the outside, slightly chewy within. Forms alternating layers in classical gâteaux
+      alongside buttercream and mousse.
+
+  - word: "choux pastry"
+    category: "Pastry Dough"
+    definition: >
+      A cooked paste (pâte à choux) made by adding flour to boiling butter-water, then
+      beating in eggs. Puffs dramatically in the oven through steam. Base for éclairs,
+      profiteroles, Paris-Brest, and croquembouche.
+
+  - word: "autolyse"
+    category: "Boulangerie"
+    definition: >
+      A rest period of 20–60 minutes after mixing flour and water (before adding salt and
+      levain). Hydrates the flour, develops gluten passively, and improves dough extensibility,
+      leading to better oven spring and crumb structure.
+
+  - word: "poolish"
+    category: "Pre-ferment"
+    definition: >
+      A liquid pre-ferment of equal weight flour and water with a tiny amount of yeast,
+      left to ferment for 12–18 hours at room temperature. Adds extensibility, depth of
+      flavour, and improved crust to breads.
+
+  - word: "levain"
+    category: "Pre-ferment"
+    definition: >
+      Natural sourdough starter — a mixture of flour and water cultivated with wild yeast
+      and lactic acid bacteria through regular feeding. Gives bread its characteristic
+      tangy flavour and open crumb structure.
+
+  - word: "terroir"
+    category: "Wine"
+    definition: >
+      The complete natural environment in which a particular wine is produced, including
+      factors such as soil composition, drainage, altitude, slope, and microclimate. Central
+      to the French AOC system and the notion that place shapes taste.
+
+  - word: "millésime"
+    category: "Wine"
+    definition: >
+      The vintage year of a wine — the year in which the grapes were harvested. In Champagne,
+      a millésimé wine is made from a single outstanding year's harvest rather than the usual
+      assemblage of multiple years.
+
+  - word: "assemblage"
+    category: "Wine"
+    definition: >
+      The blending of different grape varieties, vineyards, plots, or barrel lots to achieve
+      the desired style and consistency of the final cuvée. A key winemaking decision,
+      especially in Champagne and Bordeaux.
+
+  - word: "tannins"
+    category: "Wine"
+    definition: >
+      Polyphenolic compounds found naturally in grape skins, seeds, and stems, and also
+      extracted from oak barrels. Provide structure, texture (drying sensation), and astringency.
+      A key component in the ageing potential of red wines.
+
+  - word: "bain-marie"
+    category: "Equipment"
+    definition: >
+      A water bath used for gentle, indirect heating. Essential for tempering chocolate,
+      making custards and delicate creams, melting gelatine, and keeping sauces warm on
+      the pass without scorching.
+
+  - word: "chinois"
+    category: "Equipment"
+    definition: >
+      A conical fine-mesh sieve used to strain stocks, sauces, and creams through to remove
+      particles and achieve a smooth, silky texture. Can also be used to force purées through
+      with a ladle.
+
+  - word: "salamander"
+    category: "Equipment"
+    definition: >
+      An overhead radiant grill broiler found in professional kitchens. Used to rapidly brown,
+      glaze, and caramelise the tops of dishes without disturbing the base. Essential for
+      crème brûlée and gratin preparations.
+
+  - word: "dressage"
+    category: "Plating"
+    definition: >
+      The art and craft of plating food attractively on the plate before service. Encompasses
+      colour harmony, height, texture contrast, sauce placement, and the use of negative space
+      to create a visually compelling composition.
+
+  - word: "umami"
+    category: "Flavour"
+    definition: >
+      The fifth basic taste, described as deeply savoury, meaty, or brothy. Caused by
+      glutamate and nucleotides. Found in aged cheeses (Parmesan), soy sauce, fish sauce,
+      miso, tomatoes, and mushrooms.
+
+  - word: "sablage"
+    category: "Technique"
+    definition: >
+      The technique of rubbing cold butter into flour with the fingertips until the mixture
+      resembles coarse sand or breadcrumbs. The key step in making short pastry doughs
+      (pâte brisée, sablée) that minimises gluten development.
