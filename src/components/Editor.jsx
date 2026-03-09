@@ -1,68 +1,33 @@
-import React, { useState, useEffect, useCallback, useRef } from 'react'
-import CodeMirror from '@uiw/react-codemirror'
-import { markdown, markdownLanguage } from '@codemirror/lang-markdown'
-import { autocompletion, CompletionContext } from '@codemirror/autocomplete'
-import { EditorView, keymap } from '@codemirror/view'
-import { defaultKeymap, historyKeymap } from '@codemirror/commands'
-import { history } from '@codemirror/commands'
-import ReactMarkdown from 'react-markdown'
-import remarkGfm from 'remark-gfm'
-import rehypeHighlight from 'rehype-highlight'
+import React, { useState, useEffect, useCallback, useRef, useMemo } from 'react'
+import {
+  MDXEditor,
+  headingsPlugin,
+  listsPlugin,
+  quotePlugin,
+  thematicBreakPlugin,
+  markdownShortcutPlugin,
+  tablePlugin,
+  toolbarPlugin,
+  UndoRedo,
+  BoldItalicUnderlineToggles,
+  BlockTypeSelect,
+  InsertTable,
+  InsertThematicBreak,
+  ListsToggle,
+  linkPlugin,
+  linkDialogPlugin,
+  CreateLink,
+  Separator,
+} from '@mdxeditor/editor'
+import '@mdxeditor/editor/style.css'
 
-// ── Custom CodeMirror theme ───────────────────────────────────────────────────
-const culinaryTheme = EditorView.theme({
-  '&': { background: '#0f0d0a', color: '#ede5d5', height: '100%', fontSize: '13px' },
-  '.cm-content': { fontFamily: "'JetBrains Mono', monospace", padding: '16px 20px', caretColor: '#c8a84b' },
-  '.cm-line': { lineHeight: '1.75' },
-  '.cm-cursor': { borderLeftColor: '#c8a84b', borderLeftWidth: '2px' },
-  '.cm-gutters': { background: '#0f0d0a', borderRight: '1px solid #2e2c28', color: '#4a4438', minWidth: '44px' },
-  '.cm-gutterElement': { padding: '0 8px 0 4px' },
-  '.cm-activeLine': { background: 'rgba(200,168,75,0.04)' },
-  '.cm-activeLineGutter': { background: 'rgba(200,168,75,0.06)', color: '#7a6a50' },
-  '.cm-selectionBackground': { background: 'rgba(200,168,75,0.15)' },
-  '&.cm-focused .cm-selectionBackground': { background: 'rgba(200,168,75,0.2)' },
-  '.cm-matchingBracket': { outline: '1px solid #c8a84b', background: 'transparent' },
-  // Markdown syntax highlighting
-  '.cm-header-1': { color: '#ede5d5', fontSize: '1.1em', fontWeight: '600' },
-  '.cm-header-2': { color: '#d4c9b0', fontSize: '1em', fontWeight: '600' },
-  '.cm-header-3': { color: '#c8a84b', fontSize: '0.95em', fontWeight: '600' },
-  '.cm-strong': { color: '#ede5d5', fontWeight: '700' },
-  '.cm-em': { color: '#a89880', fontStyle: 'italic' },
-  '.cm-link': { color: '#c8a84b' },
-  '.cm-quote': { color: '#7a6a50', borderLeft: '2px solid #3d3830', paddingLeft: '8px' },
-  '.cm-hr': { color: '#3d3830' },
-  '.cm-code': { color: '#c8a84b', background: 'rgba(200,168,75,0.08)' },
-  // Autocomplete
-  '.cm-tooltip-autocomplete': {
-    background: '#1e1c18',
-    border: '1px solid #3d3830',
-    borderRadius: '8px',
-    boxShadow: '0 10px 30px rgba(0,0,0,0.6)',
-    fontFamily: "'JetBrains Mono', monospace",
-  },
-  '.cm-tooltip-autocomplete ul': { padding: '4px' },
-  '.cm-tooltip-autocomplete ul li': {
-    borderRadius: '5px',
-    padding: '6px 12px !important',
-    display: 'flex',
-    alignItems: 'center',
-    gap: '8px',
-  },
-  '.cm-tooltip-autocomplete ul li[aria-selected]': {
-    background: 'rgba(200,168,75,0.15) !important',
-    color: '#ede5d5',
-  },
-  '.cm-completionLabel': { color: '#ede5d5', flex: '1' },
-  '.cm-completionDetail': { color: '#6e6255', fontSize: '10px', fontFamily: "'Outfit', sans-serif" },
-  '.cm-completionIcon': { display: 'none' },
-  '.cm-scrollbar': { display: 'none' },
-}, { dark: true })
-
-// ── Glossary tooltip component ────────────────────────────────────────────────
+// ─── Glossary tooltip ─────────────────────────────────────────────────────────
 function GlossaryTooltip({ term, x, y }) {
   if (!term) return null
+  const safeX = Math.min(x + 16, window.innerWidth - 300)
+  const safeY = Math.min(y + 16, window.innerHeight - 140)
   return (
-    <div className="glossary-tooltip" style={{ left: x + 14, top: y + 14 }}>
+    <div className="glossary-tooltip" style={{ left: safeX, top: safeY }}>
       <div className="gt-word">{term.word}</div>
       <div className="gt-cat">{term.category}</div>
       <div className="gt-def">{term.definition}</div>
@@ -70,176 +35,321 @@ function GlossaryTooltip({ term, x, y }) {
   )
 }
 
-// ── Markdown preview with highlighted terms ───────────────────────────────────
-function MarkdownPreview({ content, glossary }) {
-  const [tooltip, setTooltip] = useState(null) // { term, x, y }
-  const timerRef = useRef(null)
-  const containerRef = useRef(null)
+// ─── Autosuggestion dropdown ──────────────────────────────────────────────────
+function AutoSuggest({ suggestions, query, position, onAccept, onDismiss }) {
+  const [idx, setIdx] = useState(0)
 
-  // Build a map of term → entry for fast lookup
-  const glossaryMap = React.useMemo(() => {
+  const filtered = useMemo(
+    () =>
+      suggestions
+        .filter(
+          s =>
+            s.word.toLowerCase().startsWith(query.toLowerCase()) &&
+            s.word.toLowerCase() !== query.toLowerCase()
+        )
+        .slice(0, 8),
+    [suggestions, query]
+  )
+
+  useEffect(() => setIdx(0), [query])
+
+  useEffect(() => {
+    if (!filtered.length) return
+    const handler = e => {
+      if (e.key === 'ArrowDown') {
+        e.preventDefault(); e.stopPropagation()
+        setIdx(i => Math.min(i + 1, filtered.length - 1))
+      } else if (e.key === 'ArrowUp') {
+        e.preventDefault(); e.stopPropagation()
+        setIdx(i => Math.max(i - 1, 0))
+      } else if (e.key === 'Tab' || e.key === 'Enter') {
+        e.preventDefault(); e.stopPropagation()
+        if (filtered[idx]) onAccept(filtered[idx].word)
+      } else if (e.key === 'Escape') {
+        e.stopPropagation(); onDismiss()
+      }
+    }
+    window.addEventListener('keydown', handler, true)
+    return () => window.removeEventListener('keydown', handler, true)
+  }, [filtered, idx, onAccept, onDismiss])
+
+  if (!filtered.length) return null
+
+  return (
+    <div
+      className="autosuggest-popup"
+      style={{ left: position.x, top: position.y + 6 }}
+    >
+      {filtered.map((s, i) => (
+        <div
+          key={s.word}
+          className={`as-item ${i === idx ? 'selected' : ''}`}
+          onMouseDown={e => { e.preventDefault(); onAccept(s.word) }}
+          onMouseEnter={() => setIdx(i)}
+        >
+          <span className="as-word">{s.word}</span>
+          <span className="as-cat">{s.category}</span>
+        </div>
+      ))}
+      <div className="as-hint">Tab / ↵ to insert · Esc to dismiss</div>
+    </div>
+  )
+}
+
+// ─── Main Editor component ────────────────────────────────────────────────────
+export default function Editor({
+  openFiles,
+  activeFile,
+  fileData,
+  onActivate,
+  onUpdate,
+  onSave,
+  onClose,
+  suggestions,
+  glossary,
+}) {
+  const wrapRef = useRef(null)
+  const [tooltip, setTooltip] = useState(null)
+  const [suggest, setSuggest] = useState(null)
+  const tipTimer = useRef(null)
+  const highlightRaf = useRef(null)
+
+  // ─── Glossary maps ───────────────────────────────────────────────────────
+  const glossaryMap = useMemo(() => {
     const m = {}
     glossary.forEach(e => { m[e.word.toLowerCase()] = e })
     return m
   }, [glossary])
 
-  // Sorted terms longest-first to avoid partial matches
-  const sortedTerms = React.useMemo(() =>
-    glossary.map(e => e.word).sort((a, b) => b.length - a.length),
+  const sortedTerms = useMemo(
+    () => glossary.map(e => e.word).sort((a, b) => b.length - a.length),
     [glossary]
   )
 
-  // After render, walk the DOM to wrap culinary terms in <mark> elements
+  // ─── Highlight culinary terms in the WYSIWYG DOM ─────────────────────────
+  // We use a MutationObserver on the contenteditable. On each change we walk
+  // text nodes and wrap matching terms in <span class="cm-term">.
   useEffect(() => {
-    if (!containerRef.current || !sortedTerms.length) return
-    // Collect all text nodes
-    const walker = document.createTreeWalker(
-      containerRef.current,
-      NodeFilter.SHOW_TEXT,
-      {
-        acceptNode(node) {
-          const parent = node.parentElement
-          // Skip code blocks, pre tags, existing marks, tooltips
-          if (parent.closest('pre, code, .term-mark, .glossary-tooltip')) return NodeFilter.FILTER_REJECT
-          return NodeFilter.FILTER_ACCEPT
-        }
-      }
+    if (!sortedTerms.length) return
+
+    const allRe = new RegExp(
+      '(?<![\\w\\u00C0-\\u024F])(' +
+        sortedTerms
+          .map(t => t.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'))
+          .join('|') +
+        ')(?![\\w\\u00C0-\\u024F])',
+      'gi'
     )
 
-    const nodes = []
-    let n
-    while ((n = walker.nextNode())) nodes.push(n)
-
-    nodes.forEach(node => {
-      let text = node.textContent
-      // Check if any term exists in this text
-      const hasMatch = sortedTerms.some(t =>
-        new RegExp(`(?<![\\w\\u00C0-\\u024F])(${t.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')})(?![\\w\\u00C0-\\u024F])`, 'i').test(text)
-      )
-      if (!hasMatch) return
-
-      const span = document.createElement('span')
-      let html = text
-      sortedTerms.forEach(t => {
-        const re = new RegExp(`(?<![\\w\\u00C0-\\u024F])(${t.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')})(?![\\w\\u00C0-\\u024F])`, 'gi')
-        html = html.replace(re, (m) => `<mark class="term-mark" data-term="${t.toLowerCase()}">${m}</mark>`)
+    function doHighlight(root) {
+      // Strip old highlights without breaking the DOM
+      root.querySelectorAll('.cm-term').forEach(el => {
+        el.replaceWith(document.createTextNode(el.textContent))
       })
-      span.innerHTML = html
-      node.parentNode.replaceChild(span, node)
-    })
-  })
+      // Merge adjacent text nodes
+      root.normalize()
 
-  const handleMouseOver = useCallback((e) => {
-    const el = e.target.closest('.term-mark')
-    if (!el) { clearTimeout(timerRef.current); setTooltip(null); return }
-    const key = el.dataset.term
-    const entry = glossaryMap[key]
-    if (!entry) return
-    clearTimeout(timerRef.current)
-    timerRef.current = setTimeout(() => {
-      setTooltip({ term: entry, x: e.clientX, y: e.clientY })
-    }, 150)
-  }, [glossaryMap])
+      const walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT, {
+        acceptNode(node) {
+          const p = node.parentElement
+          if (!p) return NodeFilter.FILTER_REJECT
+          if (p.closest('pre, code, .cm-term')) return NodeFilter.FILTER_REJECT
+          return NodeFilter.FILTER_ACCEPT
+        },
+      })
 
-  const handleMouseMove = useCallback((e) => {
-    if (!tooltip) return
-    setTooltip(t => t ? { ...t, x: e.clientX, y: e.clientY } : null)
-  }, [tooltip])
+      const nodes = []
+      let n
+      while ((n = walker.nextNode())) nodes.push(n)
 
-  const handleMouseOut = useCallback((e) => {
-    if (!e.target.closest('.term-mark')) { clearTimeout(timerRef.current); setTooltip(null) }
-  }, [])
+      nodes.forEach(node => {
+        const text = node.textContent
+        allRe.lastIndex = 0
+        if (!allRe.test(text)) return
+        allRe.lastIndex = 0
 
-  return (
-    <div
-      className="md-preview"
-      ref={containerRef}
-      onMouseOver={handleMouseOver}
-      onMouseMove={handleMouseMove}
-      onMouseOut={handleMouseOut}
-    >
-      <ReactMarkdown
-        remarkPlugins={[remarkGfm]}
-        rehypePlugins={[rehypeHighlight]}
-      >
-        {content || ''}
-      </ReactMarkdown>
+        const frag = document.createDocumentFragment()
+        let last = 0
+        let m
+        while ((m = allRe.exec(text)) !== null) {
+          if (m.index > last)
+            frag.appendChild(document.createTextNode(text.slice(last, m.index)))
+          const span = document.createElement('span')
+          span.className = 'cm-term'
+          span.dataset.term = m[0].toLowerCase()
+          span.textContent = m[0]
+          frag.appendChild(span)
+          last = m.index + m[0].length
+        }
+        if (last < text.length)
+          frag.appendChild(document.createTextNode(text.slice(last)))
 
-      {tooltip && (
-        <GlossaryTooltip
-          term={tooltip.term}
-          x={tooltip.x}
-          y={tooltip.y}
-        />
-      )}
-    </div>
-  )
-}
+        node.parentNode.replaceChild(frag, node)
+      })
+    }
 
-// ── Main Editor component ─────────────────────────────────────────────────────
-export default function Editor({ openFiles, activeFile, fileData, onActivate, onUpdate, onSave, onClose, suggestions, glossary }) {
-  const [viewMode, setViewMode] = useState('split') // 'edit' | 'split' | 'preview'
-  const isMarkdown = activeFile?.endsWith('.md')
+    function scheduleHighlight() {
+      cancelAnimationFrame(highlightRaf.current)
+      highlightRaf.current = requestAnimationFrame(() => {
+        const ce = wrapRef.current?.querySelector('[contenteditable="true"]')
+        if (ce) doHighlight(ce)
+      })
+    }
 
-  // Build autocomplete extension from suggestions
-  const autocompleteExt = React.useMemo(() => {
-    if (!suggestions.length) return []
+    // Wait a tick for MDXEditor to mount its contenteditable
+    const timer = setTimeout(() => {
+      const ce = wrapRef.current?.querySelector('[contenteditable="true"]')
+      if (!ce) return
 
-    const completions = suggestions.map(s => ({
-      label: s.word,
-      detail: s.category || '',
-      type: 'keyword',
-      boost: 1,
-    }))
+      const obs = new MutationObserver(scheduleHighlight)
+      obs.observe(ce, { childList: true, subtree: true, characterData: true })
+      scheduleHighlight()
 
-    function culinaryCompletions(context) {
-      // Match current word/phrase: allow unicode, apostrophes, spaces, hyphens
-      const wordBefore = context.matchBefore(/[\w\u00C0-\u024F\u1E00-\u1EFF' -]{2,}/)
-      if (!wordBefore && !context.explicit) return null
-      if (!wordBefore) return null
+      // cleanup stored on the element so we can tear down on file switch
+      ce._highlightObserver = obs
+    }, 80)
 
-      const partial = wordBefore.text.trim().toLowerCase()
-      const filtered = completions.filter(c =>
-        c.label.toLowerCase().startsWith(partial) && c.label.toLowerCase() !== partial
+    return () => {
+      clearTimeout(timer)
+      cancelAnimationFrame(highlightRaf.current)
+      const ce = wrapRef.current?.querySelector('[contenteditable="true"]')
+      ce?._highlightObserver?.disconnect()
+    }
+  }, [sortedTerms, activeFile])
+
+  // ─── Tooltip on hover ────────────────────────────────────────────────────
+  useEffect(() => {
+    const el = wrapRef.current
+    if (!el) return
+
+    const onOver = e => {
+      const t = e.target.closest('.cm-term')
+      if (!t) { clearTimeout(tipTimer.current); setTooltip(null); return }
+      const entry = glossaryMap[t.dataset.term]
+      if (!entry) return
+      clearTimeout(tipTimer.current)
+      tipTimer.current = setTimeout(
+        () => setTooltip({ term: entry, x: e.clientX, y: e.clientY }),
+        160
       )
-      if (!filtered.length) return null
-
-      return {
-        from: wordBefore.from,
-        to: wordBefore.to,
-        options: filtered,
-        validFor: /[\w\u00C0-\u024F\u1E00-\u1EFF' -]*/,
+    }
+    const onMove = e => {
+      if (e.target.closest('.cm-term'))
+        setTooltip(t => (t ? { ...t, x: e.clientX, y: e.clientY } : null))
+    }
+    const onOut = e => {
+      if (!e.target.closest('.cm-term')) {
+        clearTimeout(tipTimer.current)
+        setTooltip(null)
       }
     }
 
-    return [autocompletion({ override: [culinaryCompletions], closeOnBlur: false })]
-  }, [suggestions])
+    el.addEventListener('mouseover', onOver)
+    el.addEventListener('mousemove', onMove)
+    el.addEventListener('mouseout', onOut)
+    return () => {
+      el.removeEventListener('mouseover', onOver)
+      el.removeEventListener('mousemove', onMove)
+      el.removeEventListener('mouseout', onOut)
+    }
+  }, [glossaryMap])
 
-  const extensions = React.useMemo(() => [
-    markdown({ base: markdownLanguage }),
-    history(),
-    keymap.of([...defaultKeymap, ...historyKeymap]),
-    culinaryTheme,
-    EditorView.lineWrapping,
-    ...autocompleteExt,
-  ], [autocompleteExt])
+  // ─── Autosuggestion: detect current word while typing ────────────────────
+  useEffect(() => {
+    const el = wrapRef.current
+    if (!el) return
 
+    const onInput = () => {
+      const sel = window.getSelection()
+      if (!sel?.rangeCount) { setSuggest(null); return }
+      const range = sel.getRangeAt(0)
+      const node = range.startContainer
+      if (node.nodeType !== Node.TEXT_NODE) { setSuggest(null); return }
+
+      const text = node.textContent
+      const off = range.startOffset
+      // Walk back to start of word (allow unicode + hyphens + spaces for multi-word terms)
+      let i = off - 1
+      while (i >= 0 && /[\w\u00C0-\u024F\u1E00-\u1EFF' -]/.test(text[i])) i--
+      const word = text.slice(i + 1, off).trim()
+
+      if (word.length >= 2 && suggestions.length) {
+        const rng = range.cloneRange()
+        rng.collapse(true)
+        const rect = rng.getBoundingClientRect()
+        setSuggest({ query: word, position: { x: rect.left, y: rect.bottom } })
+      } else {
+        setSuggest(null)
+      }
+    }
+
+    el.addEventListener('input', onInput, true)
+    return () => el.removeEventListener('input', onInput, true)
+  }, [activeFile, suggestions])
+
+  // Accept a suggestion: replace the partial word the student typed
+  const acceptSuggest = useCallback(word => {
+    if (!word) { setSuggest(null); return }
+    const sel = window.getSelection()
+    if (!sel?.rangeCount) { setSuggest(null); return }
+
+    const range = sel.getRangeAt(0)
+    const node = range.startContainer
+    if (node.nodeType !== Node.TEXT_NODE) { setSuggest(null); return }
+
+    const text = node.textContent
+    const off = range.startOffset
+    let i = off - 1
+    while (i >= 0 && /[\w\u00C0-\u024F\u1E00-\u1EFF' -]/.test(text[i])) i--
+    const start = i + 1
+
+    // Splice the replacement in
+    node.textContent = text.slice(0, start) + word + text.slice(off)
+
+    // Move cursor to end of inserted word
+    const newRange = document.createRange()
+    newRange.setStart(node, start + word.length)
+    newRange.collapse(true)
+    sel.removeAllRanges()
+    sel.addRange(newRange)
+
+    // Tell MDXEditor the DOM changed
+    node.parentElement?.dispatchEvent(
+      new InputEvent('input', { bubbles: true, inputType: 'insertText', data: word })
+    )
+
+    setSuggest(null)
+  }, [])
+
+  // ─── Ctrl/Cmd+S ──────────────────────────────────────────────────────────
+  useEffect(() => {
+    const handler = e => {
+      if ((e.ctrlKey || e.metaKey) && e.key === 's') {
+        e.preventDefault()
+        if (activeFile) onSave(activeFile)
+      }
+    }
+    window.addEventListener('keydown', handler)
+    return () => window.removeEventListener('keydown', handler)
+  }, [activeFile, onSave])
+
+  // ─── Empty state ─────────────────────────────────────────────────────────
   if (!activeFile) {
     return (
       <main className="editor-empty-state">
         <div className="empty-icon">✦</div>
         <p>Open a file from the explorer to start editing</p>
-        <p className="empty-hint">Files autosave automatically as you type</p>
+        <p className="empty-hint">Files autosave automatically · hover terms for definitions</p>
       </main>
     )
   }
 
-  const showEditor = viewMode === 'edit' || viewMode === 'split'
-  const showPreview = (viewMode === 'preview' || viewMode === 'split') && isMarkdown
+  const isMarkdown = activeFile.endsWith('.md')
+  const wordCount = (fileData?.content || '').trim().split(/\s+/).filter(Boolean).length
 
   return (
     <main className="editor-main">
-      {/* Tabs */}
+      {/* ── Tabs ── */}
       <div className="tabs-bar">
         {openFiles.map(f => {
           const name = f.path.split('/').pop()
@@ -254,105 +364,100 @@ export default function Editor({ openFiles, activeFile, fileData, onActivate, on
               <button
                 className="tab-close"
                 onClick={e => { e.stopPropagation(); onClose(f.path) }}
-              >×</button>
+              >
+                ×
+              </button>
             </div>
           )
         })}
       </div>
 
-      {/* Toolbar */}
-      <div className="editor-toolbar">
-        <div className="toolbar-group">
-          <button className="tb-btn" title="Bold" onClick={() => insertWrap('**', '**')}>𝐁</button>
-          <button className="tb-btn" title="Italic" onClick={() => insertWrap('_', '_')}>𝘐</button>
-          <button className="tb-btn" title="H1" onClick={() => insertPrefix('# ')}>H1</button>
-          <button className="tb-btn" title="H2" onClick={() => insertPrefix('## ')}>H2</button>
-          <button className="tb-btn" title="H3" onClick={() => insertPrefix('### ')}>H3</button>
-          <button className="tb-btn" title="Bullet" onClick={() => insertPrefix('- ')}>•</button>
-          <button className="tb-btn" title="Quote" onClick={() => insertPrefix('> ')}>❝</button>
-          <button className="tb-btn" title="Code" onClick={() => insertWrap('`', '`')}>&lt;/&gt;</button>
-        </div>
-
-        <div className="toolbar-group" style={{ marginLeft: 'auto' }}>
-          <span className="toolbar-label">View:</span>
-          {['edit', 'split', 'preview'].map(m => (
-            <button
-              key={m}
-              className={`tb-btn view-btn ${viewMode === m ? 'active' : ''}`}
-              onClick={() => setViewMode(m)}
-            >
-              {m === 'edit' ? 'Edit' : m === 'split' ? 'Split' : 'Preview'}
-            </button>
-          ))}
-          <button
-            className="tb-btn save-btn"
-            title="Save (Ctrl+S)"
-            onClick={() => onSave(activeFile)}
-          >
-            💾 Save
-          </button>
-        </div>
-      </div>
-
-      {/* Editor / Preview panes */}
-      <div className={`editor-panes ${viewMode}`}>
-        {showEditor && (
-          <div className="editor-pane">
-            <CodeMirror
-              value={fileData?.content || ''}
-              extensions={extensions}
-              onChange={(value) => onUpdate(activeFile, value)}
-              height="100%"
-              style={{ height: '100%' }}
-              basicSetup={{
-                lineNumbers: true,
-                highlightActiveLine: true,
-                foldGutter: false,
-                dropCursor: false,
-                allowMultipleSelections: false,
-                indentOnInput: true,
-                bracketMatching: true,
-                closeBrackets: false,
-                autocompletion: false, // we provide our own
-                history: false, // we add it manually
-              }}
-            />
-          </div>
+      {/* ── Editor body ── */}
+      <div className="editor-body" ref={wrapRef}>
+        {isMarkdown ? (
+          <MDXEditor
+            key={activeFile}
+            markdown={fileData?.content || ''}
+            onChange={md => onUpdate(activeFile, md)}
+            contentEditableClassName="mdx-content"
+            plugins={[
+              headingsPlugin(),
+              listsPlugin(),
+              quotePlugin(),
+              thematicBreakPlugin(),
+              tablePlugin(),
+              linkPlugin(),
+              linkDialogPlugin(),
+              markdownShortcutPlugin(),
+              toolbarPlugin({
+                toolbarContents: () => (
+                  <div className="mdx-toolbar-inner">
+                    <UndoRedo />
+                    <Separator />
+                    <BlockTypeSelect />
+                    <Separator />
+                    <BoldItalicUnderlineToggles />
+                    <Separator />
+                    <ListsToggle />
+                    <Separator />
+                    <InsertTable />
+                    <InsertThematicBreak />
+                    <CreateLink />
+                    <div className="toolbar-spacer" />
+                    <button
+                      className="tb-save-btn"
+                      onClick={() => onSave(activeFile)}
+                      title="Save (Ctrl+S)"
+                    >
+                      💾 Save
+                    </button>
+                  </div>
+                ),
+              }),
+            ]}
+          />
+        ) : (
+          /* Non-.md files: plain textarea */
+          <textarea
+            className="plain-editor"
+            value={fileData?.content || ''}
+            onChange={e => onUpdate(activeFile, e.target.value)}
+            spellCheck={false}
+          />
         )}
-        {showPreview && (
-          <div className="preview-pane">
-            <MarkdownPreview
-              content={fileData?.content || ''}
-              glossary={glossary}
-            />
-          </div>
+
+        {/* Autosuggestion popup */}
+        {suggest && (
+          <AutoSuggest
+            suggestions={suggestions}
+            query={suggest.query}
+            position={suggest.position}
+            onAccept={acceptSuggest}
+            onDismiss={() => setSuggest(null)}
+          />
         )}
-        {!isMarkdown && viewMode !== 'edit' && (
-          <div className="preview-pane non-md">
-            <p style={{ color: '#6e6255', padding: '20px', fontSize: '13px' }}>
-              Preview only available for Markdown files.
-            </p>
-          </div>
+
+        {/* Glossary tooltip */}
+        {tooltip && (
+          <GlossaryTooltip term={tooltip.term} x={tooltip.x} y={tooltip.y} />
         )}
       </div>
 
-      {/* Status bar */}
+      {/* ── Status bar ── */}
       <div className="status-bar">
-        <span className="status-file">{activeFile?.split('/').pop()}</span>
+        <span className="status-file">{activeFile.split('/').pop()}</span>
         <span className="status-sep">·</span>
-        <span>{(fileData?.content || '').split('\n').length} lines</span>
+        <span>{wordCount} words</span>
         <span className="status-sep">·</span>
-        <span>{(fileData?.content || '').trim() ? (fileData.content.trim().split(/\s+/).length) : 0} words</span>
-        <span className="status-sep">·</span>
-        {fileData?.dirty
-          ? <span style={{ color: '#c8a84b' }}>● Unsaved</span>
-          : <span style={{ color: '#4a8c5c' }}>✓ Saved</span>
-        }
+        {fileData?.dirty ? (
+          <span style={{ color: '#c8a84b' }}>● Unsaved</span>
+        ) : (
+          <span style={{ color: '#4a8c5c' }}>✓ Saved</span>
+        )}
+        <span style={{ marginLeft: 'auto', color: '#4a4438', fontSize: '10px' }}>
+          Hover culinary terms for definitions · Tab to autocomplete
+        </span>
       </div>
     </main>
   )
 }
-
-// These helpers would need a ref to the editor — simplified version
-function insertWrap(before, after) { /* handled by CodeMirror */ }
-function insertPrefix(prefix) { /* handled by CodeMirror */ }
